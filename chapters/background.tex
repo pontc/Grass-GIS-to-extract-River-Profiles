@@ -1,0 +1,25 @@
+\section{Backgound}
+
+Digital elevation models forms the backbone of fluvial anaylsis. ArcGIS has been a traditional proprietary GIS system 
+
+\subsection{GRASS Structure}
+
+GRASS has a strict hierarchy for storing data (Fig [ ]). The "GISBASE" is the master folder where all grass related projects is stored. A "LOCATION" is usually defined by a coordinate system, map projection or geographical boundary. GRASS will automatically set up the file directory for each new Location as show in the flowchart. Each Location can have multiple "MAPSETS" which is used to store maps for related projects or subregions. However if working as a team on the same project, it can also be useful to support simultaneous access for multiple user. The 'PERMANENT' mapset can only be modified or removed by the owner.
+
+\subsection{GIS Data types}
+
+\subsubsection{Raster}
+
+Raster data is a regulary spaced grid (i.e. digital elevation model) and region settings are used to determine the spatial extent and resolution of the grid. 
+
+\subsection{Vector maps}
+Vector maps are series of point (coordinates), lines, polygons or volumes (or any combination of these). Typically each feature in a map will be tied to s et of attributes layers stored in a database. Data Structure
+a vector map <some_vector> is stored in the directory $MAPSET/vector/<some_vector>. This directory normally contains the files listed below.
+
+/head: ASCII file with header information; this is more or less the stuff that v.info displays.
+/dbln: ASCII file that link(s) to attribute table(s)
+/hist: ASCII file with vector map change history. v.info -h can be used to display this file.
+/coor: binary file for storing the coordinates
+/topo: binary file for topology
+/cidx: binary category index.
+

@@ -2,15 +2,31 @@
 
 \section{Choosing your dataset}
 
+Free geospatial data is widely available, today's challenges is not finding it but deciding which dataset is best for the project at hand. For high resolution datasets with global resolution, try ASTER or SRTM datsests
+
 There is a number of different topographic datasets and you will need to decide which is most appropriate for your project. LIDAR is preferable for detailed sudies with resolution of approx 10m. However to run the inversion, you will be looking to include large river drainage networks to stabalise the inversion. In this case 30 m (1 arc second) or 90 m (3 arc second) elevation datasets will be computationally less intensive. 
 
 Computational power is one of the key considerations when considering the areal extent of your project. [Include section on why this needs to be considered carefully]
 
-The following website has a nice compilation of some of the global LIDAR data available to use: \url{https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw}. 
+The following website has a nice compilation of some of the global LIDAR data available to use: \url{https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw}. For the area of interest in this particular project – the northern Arabian Platform – no LIDAR data was available. 
+
+\subsection{SRTM data}
+
+NASA Shuttle Radar Topography Mission (SRTM) Global 1 arc second V003 granules were downloaded from \url{https://search.earthdata.nasa.gov} [on 26.01.19] (174 granules in total). The main objective was to ensure that the full length of the Euphrates and Tigris river originating in northeastern Turkey, draining via Syria and Iraq into the Persian Gulf. The aim is to test the hypothesis whether it is necessary for these large drainage networks to stabalise the inversion. 
+
+However first to test the fidelity of drainage networks extracted using the suite of GRASS hydrological tools, this was first trialled on a small area of the Hatay Graben using the following 6 granules downloaded from the Earthdata NASA website:
+
+\textit{N35E035.hgt
+N35E036.hgt
+N36E035.hgt
+N36E036.hgt
+N37E035.hgt
+N37E036.hgt}
+
 
 \subsection{Downloading grids from Nasa Earthdata using Linux}
 
-NASA's Earthdata website provides a ready-made script to download your chosen granules directly onto your computer. When working with large datasets, I would highly recommend option for this option as it will be hugely time efficient. Opt for direct download and click on ``Download Access Script``. This will take you to a page containing instructions on how to use the download script. Click the ``Download Script File`` button to download the script. From your download folder, open the script using your preferred text editor (e.g. Visual Studio Code, VIM, gedit):
+The Earthdata website provides a ready-made script to download your chosen granules directly onto your computer. When working with large datasets, I would highly recommend option for this option as it will be hugely time efficient. Opt for direct download and click on ``Download Access Script``. This will take you to a page containing instructions on how to use the download script. Click the ``Download Script File`` button to download the script. From your download folder, open the script using your preferred text editor (e.g. Visual Studio Code, VIM, gedit):
 
 \begin{lstlisting}[language=bash]
 cd Downloads
@@ -24,14 +40,10 @@ chmod 777 download.sh
 ./download.sh 
 \end{lstlisting}
 
-Type in your earthdata username and password when prompted. Be aware that nothing will show up when you type your password. The grids will now be automatically downloaded to our Downloads folder.
-
-\subsection{Unzipping files}
-
-Unzip files to chosen destination folder either with unzip or tar. If using a wild card to pattern match, make sure it is all within quote marks, for example:
+Type in your earthdata username and password when prompted. Be aware that nothing will show up when you type your password. The grids will now be automatically downloaded to our Downloads folder. Unzip files to chosen destination folder. If using a wild card to pattern match, make sure it is all within quote marks.
 
 \begin{lstlisting}[language=bash]
-unzip "*.hgt" -d destination-folder
+unzip "*.hgt" destination-folder
 \end{lstlisting}
 
 
