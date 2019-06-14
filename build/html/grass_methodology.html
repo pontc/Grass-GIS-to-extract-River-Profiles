@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Preparing data &#8212; Grass Methodology  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Understanding GRASS" href="grass_structure.html" />
+    <link rel="prev" title="Grass GIS to extract River Profiles: Methodology" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="preparing-data">
+<h1>Preparing data<a class="headerlink" href="#preparing-data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="choosing-your-dataset">
+<h2>Choosing your dataset<a class="headerlink" href="#choosing-your-dataset" title="Permalink to this headline">¶</a></h2>
+<p>Free geospatial data is widely available, so today’s challenges is not
+finding it but deciding which dataset is best for the project at hand.
+There are a number of different topographic datasets freely available
+online, you will need to decide which is most appropriate for your
+project. LIDAR is preferable for detailed sudies with resolutions of
+approx 10m. Digital elevation models of 30 m (1 arc second) to 90 m (3
+arc second) resolution are often used for regional to continental-scale
+drainage inversions. Computational power will be one consideration when
+deciding on the areal extent of your project.</p>
+<p>The following are high resolution datasets with global resolution:</p>
+<p><strong>Space Shuttle Radar Topography Mission (SRTM):</strong> SRTM has global 30m
+and 90m datasets available on NASA’s Earthdata portal:
+<a class="reference external" href="https://search.earthdata.nasa.gov/search">https://search.earthdata.nasa.gov/search</a>. NASA gathered the data using
+interferometric synthetic arpeture radar (inSAR) on an 11 day mission
+back in 2000 aboard its Space Shuttle Endeavour. Keep a look out for
+NASADEM which will be a fully reprocessed SRTM data using
+state-of-the-art interferometric processing techniques. The final
+version has not yet been released.</p>
+<p><strong>ASTER Global Digital Elevation Model:</strong> ASTER GDEM-2 is also available
+for download at NASA Earthdata. ASTER GDEM is a collaboration between
+NASA and Japan’s Advanced Spaceborne Thermal Emission and Reflection
+Radiometer (ASTER). The digital elevation model was created using
+stereoscopic pairs and photogrammetry to measure
+elevation from two images at different angles. Cloud cover is the main
+problem with accuracy of the ASTER GDEM products but on the other hand it
+is considered to be a more accurate representation of rugged mountainous terrain than SRTM.</p>
+<p><strong>JAXA’s Global ALOS 3D World:</strong> Tiles can be downloaded from JAXA’s
+portal on registration: <a class="reference external" href="https://www.eorc.jaxa.jp/ALOS/en/aw3d30/">https://www.eorc.jaxa.jp/ALOS/en/aw3d30/</a>. This
+30m digital surface model was collected aboard the Advanced Land
+Observing Satellite “ALOS” by the Panachromatic Remote-sensing
+Instrument for Stereo Mapping (PRISM), with the latest version released
+in 2019.</p>
+<p><strong>LIDAR:</strong> The following website has a nice compilation of some of the
+global LIDAR data available to use:
+<a class="reference external" href="https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw">https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw</a>.</p>
+</div>
+<div class="section" id="downloading-strm-granules">
+<h2>Downloading STRM Granules<a class="headerlink" href="#downloading-strm-granules" title="Permalink to this headline">¶</a></h2>
+<p>Earthdata website provides a ready-made script to download your chosen
+granules directly onto your computer. Opt for direct download and click
+on <em>“Download Access Script”</em>. This will take you to a page containing
+instructions on how to use the download script. Click the <em>“Download
+Script File”</em> button to download the script.</p>
+<p>If you are using Ubuntu, make the following change to the Download script:</p>
+<p><span class="math notranslate nohighlight">\(\#\)</span>!/bin/sh <span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\#\)</span>!/bin/bash</p>
+<p>as <em>bin/sh</em> no longer links to bash, instead pointing to another shell called
+<em>dash</em>. Now execute and run the script from the command line in your Downloads
+directory. You will be prompted for your Earthdata username and password,
+be aware that nothing will show up when you type your password. The
+grids will now be automatically downloaded to the Downloads directory, where you
+can unzip files to you chosen destination directory.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Change to Downloads directory</span>
+<span class="nb">cd</span> Downloads
+<span class="c1">#Execute script</span>
+chmod <span class="m">777</span> download.sh
+<span class="c1">#Run program to download STRM granules from Earthdata website</span>
+./download.sh
+<span class="c1">#Unzip files to chosen directory</span>
+unzip <span class="s2">&quot;*.hgt&quot;</span> destination-directory
+</pre></div>
+</div>
+</div>
+<div class="section" id="merging-rasters">
+<h2>Merging rasters<a class="headerlink" href="#merging-rasters" title="Permalink to this headline">¶</a></h2>
+<p>Merge individual grids into a DEM using <em>gdal_merge.py</em>. By far the simplest and most time efficient way when compared to ArcGIS’s <em>“Mosaic to New
+Raster”</em> tool. To give an example, 176 SRTM grids at 30m resolution covering the northern Arabian Peninsula was stitched together in less than a minute.</p>
+<p>The following code example uses an output format of Gtiff but any format can be
+specified using the <em>-of</em> flag.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls *.hgt &gt; DEMs.txt
+gdal_merge.py -of Gtiff -n -32768 -a_nodata -32768 <span class="se">\</span>
+     -o merged_dem.tif --optfile DEMs.txt
+</pre></div>
+</div>
+<p><strong>No data values.</strong> No_data values can be lost in
+translation so specify a no_data value to maintain NoData cells in the
+merged dem. This will be a pre-requisite if using programs like RichDem to hydrologically process the DEM. The <em>-n</em> flag ignores any
+pixels in the original grids containing this pixel value, while
+<em>-a_nodata</em> assigns a specified no_data value to the output grid.
+You can check no_data values in the original SRTM grids using
+<em>gdalinfo</em>. This tool will list information about your raster dataset,
+including the raster’s coordinate system, resolution (i.e. pixel size)
+and regional extent.</p>
+<p><strong>Example</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gdalinfo</span> <span class="o">~/</span><span class="n">openev</span><span class="o">/</span><span class="n">utm</span><span class="o">.</span><span class="n">tif</span>
+<span class="n">Driver</span><span class="p">:</span> <span class="n">GTiff</span><span class="o">/</span><span class="n">GeoTIFF</span>
+<span class="n">Size</span> <span class="ow">is</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span>
+<span class="n">Coordinate</span> <span class="n">System</span> <span class="ow">is</span><span class="p">:</span>
+<span class="n">PROJCS</span><span class="p">[</span><span class="s2">&quot;NAD27 / UTM zone 11N&quot;</span><span class="p">,</span>
+    <span class="n">GEOGCS</span><span class="p">[</span><span class="s2">&quot;NAD27&quot;</span><span class="p">,</span>
+        <span class="n">DATUM</span><span class="p">[</span><span class="s2">&quot;North_American_Datum_1927&quot;</span><span class="p">,</span>
+            <span class="n">SPHEROID</span><span class="p">[</span><span class="s2">&quot;Clarke 1866&quot;</span><span class="p">,</span><span class="mf">6378206.4</span><span class="p">,</span><span class="mf">294.978698213901</span><span class="p">]],</span>
+        <span class="n">PRIMEM</span><span class="p">[</span><span class="s2">&quot;Greenwich&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">UNIT</span><span class="p">[</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span><span class="mf">0.0174532925199433</span><span class="p">]],</span>
+    <span class="n">PROJECTION</span><span class="p">[</span><span class="s2">&quot;Transverse_Mercator&quot;</span><span class="p">],</span>
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;latitude_of_origin&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;central_meridian&quot;</span><span class="p">,</span><span class="o">-</span><span class="mi">117</span><span class="p">],</span>
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;scale_factor&quot;</span><span class="p">,</span><span class="mf">0.9996</span><span class="p">],</span>
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;false_easting&quot;</span><span class="p">,</span><span class="mi">500000</span><span class="p">],</span>
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;false_northing&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">UNIT</span><span class="p">[</span><span class="s2">&quot;metre&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">Origin</span> <span class="o">=</span> <span class="p">(</span><span class="mf">440720.000000</span><span class="p">,</span><span class="mf">3751320.000000</span><span class="p">)</span>
+<span class="n">Pixel</span> <span class="n">Size</span> <span class="o">=</span> <span class="p">(</span><span class="mf">60.000000</span><span class="p">,</span><span class="o">-</span><span class="mf">60.000000</span><span class="p">)</span>
+<span class="n">Corner</span> <span class="n">Coordinates</span><span class="p">:</span>
+<span class="n">Upper</span> <span class="n">Left</span>  <span class="p">(</span>  <span class="mf">440720.000</span><span class="p">,</span> <span class="mf">3751320.000</span><span class="p">)</span> <span class="p">(</span><span class="mi">117</span><span class="n">d38</span><span class="s1">&#39;28.21&quot;W, 33d54&#39;</span><span class="mf">8.47</span><span class="s2">&quot;N)</span>
+<span class="n">Lower</span> <span class="n">Left</span>  <span class="p">(</span>  <span class="mf">440720.000</span><span class="p">,</span> <span class="mf">3720600.000</span><span class="p">)</span> <span class="p">(</span><span class="mi">117</span><span class="n">d38</span><span class="s1">&#39;20.79&quot;W, 33d37&#39;</span><span class="mf">31.04</span><span class="s2">&quot;N)</span>
+<span class="n">Upper</span> <span class="n">Right</span> <span class="p">(</span>  <span class="mf">471440.000</span><span class="p">,</span> <span class="mf">3751320.000</span><span class="p">)</span> <span class="p">(</span><span class="mi">117</span><span class="n">d18</span><span class="s1">&#39;32.07&quot;W, 33d54&#39;</span><span class="mf">13.08</span><span class="s2">&quot;N)</span>
+<span class="n">Lower</span> <span class="n">Right</span> <span class="p">(</span>  <span class="mf">471440.000</span><span class="p">,</span> <span class="mf">3720600.000</span><span class="p">)</span> <span class="p">(</span><span class="mi">117</span><span class="n">d18</span><span class="s1">&#39;28.50&quot;W, 33d37&#39;</span><span class="mf">35.61</span><span class="s2">&quot;N)</span>
+<span class="n">Center</span>      <span class="p">(</span>  <span class="mf">456080.000</span><span class="p">,</span> <span class="mf">3735960.000</span><span class="p">)</span> <span class="p">(</span><span class="mi">117</span><span class="n">d28</span><span class="s1">&#39;27.39&quot;W, 33d45&#39;</span><span class="mf">52.46</span><span class="s2">&quot;N)</span>
+<span class="n">Band</span> <span class="mi">1</span> <span class="n">Block</span><span class="o">=</span><span class="mi">512</span><span class="n">x16</span> <span class="n">Type</span><span class="o">=</span><span class="n">Byte</span><span class="p">,</span> <span class="n">ColorInterp</span><span class="o">=</span><span class="n">Gray</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="projecting-data">
+<h2>Projecting data<a class="headerlink" href="#projecting-data" title="Permalink to this headline">¶</a></h2>
+<p>Use <em>gdalwarp</em> to project the DEM into your preferred coordinate system
+before importing into GRASS. SRTM raster
+datasets uses a geographic coordinate system based on a spherical
+surface. This can be problematic when measuring distances in angular
+units as it is highly dependant on where you are on the Earth’s surface.
+Extracting rivers relies on accurately knowing river distances measured
+in length, so use an equal areas projected coordinate system. For small
+study areas, Universal Transvere Mercator (UTM) system is widely used
+while Albers Equal Areas or equivalent projections may be used for
+regional or continent-wide analyses. Note that you will also need to consider the
+appropriate ellipsoid to use for your projection.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">proj</span><span class="o">=</span><span class="s1">&#39;+proj=lcc +lat_1=17.0 +lat_2=33.0 +lat_0=25.08951 \</span>
+<span class="s1">     +lon_0=48.0 +ellps=intl +units=m +no_defs&#39;</span>
+
+gdalwarp -t_srs <span class="nv">$proj</span> merged_dem.tif projected_dem.tif
+</pre></div>
+</div>
+<p>You can use <em>-te &lt;xmin ymin xmax ymax&gt;</em> to clip the dem to a specific
+extent if you want.</p>
+</div>
+<div class="section" id="filling-voids">
+<h2>Filling Voids<a class="headerlink" href="#filling-voids" title="Permalink to this headline">¶</a></h2>
+<p>The primary objective of the NASA MeaSUREs project (Making Earth System
+Data Records for Use in Research Environments) Program was to remove
+voids (no data holes) in the NASA SRTM DEM. In theory data should be
+seamless an no processing is required to fill voids.</p>
+<p>There is a tool in GRASS to check and fill no data voids in the dem. It
+is also possible to use the flag in gdal <em>dstnodata -9999</em> to fix any
+issues although this isn’t always guaranteed to work.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Grass Methodology</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Preparing data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#choosing-your-dataset">Choosing your dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-strm-granules">Downloading STRM Granules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#merging-rasters">Merging rasters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#projecting-data">Projecting data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filling-voids">Filling Voids</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="grass_structure.html">Understanding GRASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydrological_analysis.html">Stream Analysis</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Grass GIS to extract River Profiles: Methodology</a></li>
+      <li>Next: <a href="grass_structure.html" title="next chapter">Understanding GRASS</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Carla Pont.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/grass_methodology.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

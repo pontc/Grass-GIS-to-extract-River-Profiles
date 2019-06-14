@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stream Analysis &#8212; Grass Methodology  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Understanding GRASS" href="grass_structure.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="stream-analysis">
+<span id="stream"></span><h1>Stream Analysis<a class="headerlink" href="#stream-analysis" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pre-analysis-steps">
+<h2>Pre-analysis steps<a class="headerlink" href="#pre-analysis-steps" title="Permalink to this headline">¶</a></h2>
+<p>The following steps should have been completed before the DEM is ready
+for river picking. See section on preparing your data if in doubt.</p>
+<ol class="arabic simple">
+<li><p>The DEM (Digital Elevation Model) has been downloaded and turned into
+a single raster.</p></li>
+<li><p>The DEM is projected into metres - you do not want to be working in
+degrees.</p></li>
+<li><p>The DEM has been checked for any holes/spikes/or errors.</p></li>
+<li><p>You’ve initiated a GRASS Project and now within the GRASS GIS’s
+own shell set up.</p></li>
+</ol>
+</div>
+<div class="section" id="importing-and-displaying-gdal-raster-data">
+<h2>Importing and displaying GDAL Raster Data<a class="headerlink" href="#importing-and-displaying-gdal-raster-data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="importing-and-extent-of-dem">
+<h3>Importing and extent of DEM<a class="headerlink" href="#importing-and-extent-of-dem" title="Permalink to this headline">¶</a></h3>
+<p>To import your DEM into GRASS, navigate to the directory containing the
+DEM files from the command line.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> destination_folder/project
+r.in.gdal <span class="nv">input</span><span class="o">=</span>dem.tif <span class="nv">output</span><span class="o">=</span>dem
+</pre></div>
+</div>
+<p>To check or change the regional extent of your raster datset, use <em>g.region</em>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g.region -p
+
+--------------------
+projection: <span class="m">1</span> <span class="o">(</span>UTM<span class="o">)</span>
+zone:       <span class="m">37</span>
+datum:      wgs84
+ellipsoid:  wgs84
+north:      <span class="m">4213386</span>.67972946
+south:      <span class="m">3874847</span>.25407434
+west:       <span class="m">134877</span>.89022413
+east:       <span class="m">324399</span>.35901918
+nsres:      <span class="m">29</span>.13921722
+ewres:      <span class="m">29</span>.13921722
+rows:       <span class="m">11618</span>
+cols:       <span class="m">6504</span>
+cells:      <span class="m">75563472</span>
+</pre></div>
+</div>
+<p>If region has been changed, you can bring it back to its full extent and original
+resolution by typing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g.region <span class="nv">rast</span><span class="o">=</span>dem
+</pre></div>
+</div>
+</div>
+<div class="section" id="displaying-raster-data">
+<h3>Displaying Raster Data<a class="headerlink" href="#displaying-raster-data" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-default" id="id1">
+<img alt="Output dem from GRASS GUI display monitor" src="_images/dem.png" />
+<p class="caption"><span class="caption-text">Output dem from GRASS GUI display monitor
+DEM masked using a catchment boundary shapefile</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The GUI interface can be used in the same way as ArcGIS to add and
+manipulate raster datasets. The following instruction will use the
+command line, with the advantage of allowing short scripts to create and
+save map images. It is good practice to check processing steps as you go
+along, particularly if you are changing the computational region. You
+can display the raster DEM in a graphical interface from the command
+line using <em>d.mon</em> and all display modules are prefixed with <em>d.*</em>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Starts display window using monitor wx0</span>
+d.mon <span class="nv">start</span><span class="o">=</span>wx0
+<span class="c1"># Uses a scalable elevation color scheme for the topo map</span>
+r.colors <span class="nv">map</span><span class="o">=</span>dem <span class="nv">color</span><span class="o">=</span>elevation
+<span class="c1"># Displays topo map</span>
+d.rast <span class="nv">map</span><span class="o">=</span>dem
+<span class="c1"># Save display</span>
+d.out.file <span class="nv">output</span><span class="o">=</span>folder/dem <span class="nv">format</span><span class="o">=</span>png
+</pre></div>
+</div>
+</div>
+<div class="section" id="masking-to-coastlines">
+<h3>Masking to Coastlines<a class="headerlink" href="#masking-to-coastlines" title="Permalink to this headline">¶</a></h3>
+<p>Before proceeding with hydrological processing of the dem, make sure
+your region is delineated to the desired extent. First mask
+the dem to coastlines or any other desired shape polygon i.e. catchment
+or country. Any subsequent raster operations will be limited to the area
+within the mask.</p>
+<p><strong>GSHSS Coastlines.</strong> High resolution shoreline data can be downloaded
+from the National Oceanic and Atmospheric Adminstration
+(<a class="reference external" href="www.noaa.gov">www.noaa.gov</a>). Make sure you download Level 1 data which contains
+continental land masses with a complete hierachically arranged closed polygon for masking.</p>
+<p><strong>Import shapefile.</strong> Import coastline data to the regional extent of
+the dem which GRASS will reproject from lat long to the DEM’s projected coordinates on the fly.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Import shapefile</span>
+v.import <span class="nv">input</span><span class="o">=</span>GSHSS_h_L1.shp <span class="nv">output</span><span class="o">=</span>coast <span class="nv">extent</span><span class="o">=</span>region
+<span class="c1">#View shapefile</span>
+d.vect <span class="nv">map</span><span class="o">=</span>coast <span class="nv">width</span><span class="o">=</span><span class="m">2</span> <span class="nv">type</span><span class="o">=</span>boundary
+<span class="c1"># Mask dem using shapefile</span>
+r.mask <span class="nv">vector</span><span class="o">=</span>coast
+<span class="c1"># Display masked dem to check your results</span>
+d.rast dem
+<span class="c1">#Removing mask</span>
+r.mask -r
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-hillshades">
+<h3>Creating Hillshades<a class="headerlink" href="#creating-hillshades" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-default" id="id2">
+<img alt="Hillshade" src="_images/hillshade.png" />
+<p class="caption"><span class="caption-text">Shaded relief map</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>To create a shaded relief map from a DEM, use <em>r.relief</em>. Default
+settings used for altitude: 30 degrees above the horizon; azimuth: 270
+degrees east from north; and exaggeration z-scaling factor of 1 can all be changed.
+The map is assigned a grey-scale color table. It is possible to
+add color to shaded relief maps using <em>d.shade</em>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Hillshade using dem color table</span>
+r.relief <span class="nv">input</span><span class="o">=</span>dem <span class="nv">output</span><span class="o">=</span>dem_shade
+
+<span class="c1">#Displaying draped dem over shaded relief raster map</span>
+d.mon wx0
+d.shade <span class="nv">shade</span><span class="o">=</span>dem_shade <span class="nv">color</span><span class="o">=</span>dem
+
+<span class="c1">#Combining shaded relief and dem rasters for output</span>
+r.blend <span class="nv">first</span><span class="o">=</span>dem <span class="nv">second</span><span class="o">=</span>dem_shade <span class="se">\</span>
+    <span class="nv">output</span><span class="o">=</span>colored_shaded_relief <span class="nv">percent</span><span class="o">=</span><span class="m">40</span>
+d.rgb <span class="nv">r</span><span class="o">=</span>colored_shaded_relief.r <span class="nv">g</span><span class="o">=</span>colored_shaded_relief.g <span class="se">\</span>
+    <span class="nv">b</span><span class="o">=</span>colored_shaded_relief.b
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="watershed-analysis">
+<h2>Watershed Analysis<a class="headerlink" href="#watershed-analysis" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="filling-dem">
+<h3>Filling DEM<a class="headerlink" href="#filling-dem" title="Permalink to this headline">¶</a></h3>
+<p><strong>To fill or not to fill.</strong> DEM’s will have numerous sinks,
+so before rivers can be extracted, a
+hydrologically consistent surface needs to be produced. Local
+depressions will interrupt flow-routing alogorithms and produce
+incorrect stream networks if incorrect patterns of flow accumulation
+have been created. However, it is worth noting that not all sinks are
+errors due to resolution of the data or rounding of elevations to the
+nearest integer, these sinks can be real-life features. GRASS
+<em>r.watershed</em> module does not require DEM’s to be filled. Instead it
+uses a least-cost search A* algorithm to traverse the elevation surface from
+the outlet. Whether you decide to fill your DEM before processing, will
+depend on what aspects you are exploring.</p>
+<div class="figure align-default" id="id3">
+<img alt="Flat artefacts" src="_images/flat_artefacts.png" />
+<p class="caption"><span class="caption-text">Stream Flat Artefacts. (A) GRASS Stream network extracted from an unfilled dem. (B) ArcGIS stream network using filled DEM. (C) GRASS stream network using filled dem.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Filling.</strong> GRASS <em>r.fill.dir</em> module fills DEM’s in the same way as ArcGIS’s Fill
+tool (available as part of ArcGIS’s spatial analyst licence). GRASS follows
+Henson and Domingue (1998) to filter and fill the elevation map. Using
+the neighborhood technique, <em>r.fill.dir</em> fills depressions with
+one pass across the elevation model and to produce a flow direction map by
+assigning flow direction towards the steepest slope from one of the 8 surrounding cells (D8 algorithm). In flat areas, where cells in a number of
+different directions have the steepest slope, the algorithm will iteratively try different routes by propogating flow directions from areas where directions are know into areas that can’t be resolved. If <em>r.fill.dir</em> is unable to fill problem areas on first pass, run <em>r.fill.dir</em> repeatedly (using output from one run as input to the next run)  to fill all problem areas. Be aware that these depression-filling algorithms  create artifical features (e.g. flats leading to parallel streams).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Sets computational region</span>
+g.region <span class="nv">raster</span><span class="o">=</span>dem -p
+<span class="c1">#Fills dem</span>
+r.fill.dir <span class="nv">input</span><span class="o">=</span>dem <span class="nv">output</span><span class="o">=</span>dem_fill <span class="nv">direction</span><span class="o">=</span>fdir <span class="se">\</span>
+    <span class="nv">areas</span><span class="o">=</span>dem_sinks
+</pre></div>
+</div>
+<div class="figure align-default" id="id4">
+<img alt="Fill" src="_images/fill_diff.png" />
+<p class="caption"><span class="caption-text">Difference map comparing filled vs unfilled dem for
+(A) ArcGIS fill tool and (B) GRASS <em>r.fill.dir</em> tool.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>Use raster calculator to generate a difference map showing pixelwise
+differences between the raw and filled dem:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create diff map</span>
+r.mapcalc <span class="s2">&quot;dem_diff = dem_fill - dem&quot;</span>
+r.colors dem_diff <span class="nv">color</span><span class="o">=</span>differences
+
+<span class="c1"># assess univariate statistics of differences</span>
+r.univar -e dem_diff
+
+<span class="c1"># vectorize filled areas (see r.univar output,</span>
+<span class="c1"># fills are positive values)</span>
+r.mapcalc <span class="s2">&quot;dem_fill_area = if(dem_diff &gt; 0.0, 1, null() )&quot;</span>
+r.to.vect <span class="nv">input</span><span class="o">=</span>dem_fill_area <span class="nv">output</span><span class="o">=</span>dem_fill_area <span class="nv">type</span><span class="o">=</span>area
+
+<span class="c1"># visualise differences using hillshade</span>
+r.relief <span class="nv">input</span><span class="o">=</span>dem_fill <span class="nv">output</span><span class="o">=</span>dem_fill_shade
+d.mon wx0
+d.shade <span class="nv">shade</span><span class="o">=</span>dem_fill_shade <span class="nv">color</span><span class="o">=</span>dem_fill
+d.vect dem_fill_area <span class="nv">type</span><span class="o">=</span>boundary <span class="nv">color</span><span class="o">=</span>red
+</pre></div>
+</div>
+<p><strong>Large datasets.</strong> Grass’s <em>r.fill.dir</em> module does not cope well with large raster datasets. It is worth exploring python modules like <em>Richdem</em> created by
+Richard Barnes from Berkeley to fill DEMs before importing into GRASS. Below is an example using Richdem in python to fill the DEM and compare output with the unfilled DEM.</p>
+<div class="figure align-default" id="id5">
+<a class="reference internal image-reference" href="_images/richdem_fill.png"><img alt="Richdem Fill" src="_images/richdem_fill.png" style="width: 374.0px; height: 493.20000000000005px;" /></a>
+<p class="caption"><span class="caption-text">Difference map comparing filled vs unfilled dem for Richdem</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">richdem</span> <span class="kn">as</span> <span class="nn">rd</span>
+
+<span class="nb">input</span><span class="o">=</span><span class="s2">&quot;dem.tif&quot;</span>
+<span class="n">output</span><span class="o">=</span><span class="s2">&quot;dem_filled.tif&quot;</span>
+
+<span class="c1">#Load DEM</span>
+<span class="n">dem</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">LoadGDAL</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+<span class="c1">#Copy the DEM if intending to create diff map</span>
+<span class="c1">#Skip this step if not interested in comparing DEMs</span>
+<span class="n">demorig</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1">#Fill depressions in the DEM. The data is modified in-place</span>
+<span class="c1">#to avoid making an unnecessary copy. This saves both time and RAM</span>
+<span class="n">rd</span><span class="o">.</span><span class="n">FillDepressions</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1">#Compare difference of the filled and unfilled DEM</span>
+<span class="n">diff</span> <span class="o">=</span> <span class="n">dem</span> <span class="o">-</span> <span class="n">demorig</span>
+
+<span class="c1">#Display the difference.</span>
+<span class="c1">#Do not plot values where there was no difference.</span>
+<span class="c1">#Note: none of the *rd.rdShow* modules worked for me</span>
+<span class="c1">#but can be easily plotted up in GMT as in the figure above</span>
+<span class="n">rd</span><span class="o">.</span><span class="n">rdShow</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">ignore_colours</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1">#Save the DEM</span>
+<span class="n">rd</span><span class="o">.</span><span class="n">SaveGDAL</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">dem</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="extracting-stream-network">
+<h2>Extracting Stream Network<a class="headerlink" href="#extracting-stream-network" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="flow-accumulation">
+<h3>Flow Accumulation<a class="headerlink" href="#flow-accumulation" title="Permalink to this headline">¶</a></h3>
+<p>Flow accumulation can be generated using the GRASS module <em>r.watershed</em>.
+Ths is based on the least cost path (LCP) algorithm by Hart et al., 1968
+and Ehlschlaeger, 1989 originally designed to increase processing speed
+and reduce memory use. Outlets, or pour points, are the lowest point along
+the map boundary where at least one neighbouring cell has unknown elevation
+(i.e. masked coastlines). Instead of using the path of steepest descent, the
+search proceeds along the least steep uphill slope from a pour point sorted
+on cost (i.e. lowest elevation). If a sink is encountered, the search will take
+the steepest descent to the bottom of the depression and then continue uphill as before. The search continues until all grid points have been processed.</p>
+<p>The flow accumulation raster can be created using <em>r.watershed</em> with the
+option of using single flow direction (<em>-s</em> flag) or multiple flow direction
+(<em>-m</em> flag).</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Inputs:</p></td>
+<td><p>Filled dem</p></td>
+</tr>
+<tr class="row-even"><td><p>Output:</p></td>
+<td><p>Flow accumulation raster</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>r.watershed -s <span class="nv">ele</span><span class="o">=</span>dem <span class="nv">acc</span><span class="o">=</span>facc
+</pre></div>
+</div>
+</div>
+<div class="section" id="stream-network">
+<h3>Stream Network<a class="headerlink" href="#stream-network" title="Permalink to this headline">¶</a></h3>
+<p>The GRASS module <em>r.stream.extract</em> will output both a flow direction raster and stream network. Note that both modules <em>r.stream.extract</em> and <em>r.watershed</em> produce slightly different vector layers, so use <em>r.stream.extract</em> to create the vectorised stream network.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 84%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Inputs</p></td>
+<td><p>filled dem, flow accumulation raster</p></td>
+</tr>
+<tr class="row-even"><td><p>Threshold</p></td>
+<td><p>min flow accumulation to initiate streams</p></td>
+</tr>
+<tr class="row-odd"><td><p>Outputs</p></td>
+<td><p>flow direction, stream network raster and vector layer</p></td>
+</tr>
+</tbody>
+</table>
+<p>The threshold will determine the river network density. You will need to play around with this number and check the fidelity of stream network with Landsat and/or satellite imagery. For example, a threshold of 300 will extract streams with a minimum drainage area of 0.27 km <sup>2</sup> for a 30 m dem or 2.43 km <sup>2</sup> for a 90 m dem.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>r.stream.extract <span class="nv">elevation</span><span class="o">=</span>dem <span class="nv">accumulation</span><span class="o">=</span>facc <span class="se">\</span>
+    <span class="nv">threshold</span><span class="o">=</span><span class="m">300</span> <span class="nv">stream_rast</span><span class="o">=</span>stream <span class="se">\</span>
+    <span class="nv">stream_vector</span><span class="o">=</span>stream <span class="nv">direction</span><span class="o">=</span>fdir
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-catchments">
+<h3>Creating Catchments<a class="headerlink" href="#creating-catchments" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="_images/sub_basin.png"><img alt="_images/sub_basin.png" src="_images/sub_basin.png" style="width: 48%;" /></a>
+<a class="reference internal image-reference" href="_images/basin.png"><img alt="_images/basin.png" src="_images/basin.png" style="width: 48%;" /></a>
+<p><em>Sub-catchments extracted using r.watershed v. main watershed extracted using r.stream.basins</em></p>
+<p>While <em>r.watershed</em> outputs a basins raster, the resulting basin raster identifies
+all sub-catchments. Use the <em>-l</em> flag in the <em>r.stream.basins</em> module
+to identify main watersheds in the DEM of interest.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>r.stream.basins -l <span class="nv">direction</span><span class="o">=</span>fdir <span class="nv">stream_rast</span><span class="o">=</span>stream <span class="se">\</span>
+    <span class="nv">basins</span><span class="o">=</span>basin
+</pre></div>
+</div>
+</div>
+<div class="section" id="incomplete-basins">
+<h3>Incomplete Basins<a class="headerlink" href="#incomplete-basins" title="Permalink to this headline">¶</a></h3>
+<p>Incomplete basins will underestimate flow accumulation which can be a problem where the regional extent of the dem truncates complete catchment areas. The flow accumulation raster will identify these areas with negative values and problem areas can be identified using  the raster calculator. If these incomplete basins are problematic for subsequent analysis, expand the region of interest and re-create the rasters following the steps above.</p>
+<p>Inputs required:  Filled dem, basin</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#To identify parts of the basin likely to underestimate</span>
+<span class="c1">#flow accumulation</span>
+r.mapcalc <span class="s2">&quot;problems = if(facc &lt; 0, basin, null())&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="extracting-individual-streams-for-plotting">
+<h3>Extracting Individual Streams for Plotting<a class="headerlink" href="#extracting-individual-streams-for-plotting" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-default" id="id6">
+<img alt="river_profile" src="_images/grass_riv65.png" />
+<p class="caption"><span class="caption-text">Right: River long profile and drainage area
+Left: Plan view of river profile.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p>The following example is based on having a list of X Y coordinates for
+channel heads of interest. This can be done in two ways, depending on the
+region of interest. To extract all streams in the DEM, the X Y coordinates can
+be taken from the starting nodes of the vectorised stream network.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>v.out.ascii <span class="nv">in</span><span class="o">=</span>stream_300 <span class="nv">where</span><span class="o">=</span><span class="s2">&quot;stream_type=start&quot;</span> <span class="se">\</span>
+   <span class="nv">out</span><span class="o">=</span>channel_heads.dat <span class="nv">format</span><span class="o">=</span>point <span class="nv">layer</span><span class="o">=</span>-1 <span class="nv">separator</span><span class="o">=</span><span class="s1">&#39;,&#39;</span> --o
+</pre></div>
+</div>
+<p>Alternatively, a randomised set of starting points taken from the
+flow accumulation grid using the same threshold values.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>r.mapcalc <span class="s2">&quot;facc_300 = if( &quot;</span>facc<span class="s2">&quot; == 300, 1, null())&quot;</span>
+v.out.ascii <span class="nv">in</span><span class="o">=</span>facc_300 <span class="nv">out</span><span class="o">=</span>channel_heads.dat <span class="se">\</span>
+   <span class="nv">format</span><span class="o">=</span>point <span class="nv">layer</span><span class="o">=</span>-1 <span class="nv">separator</span><span class="o">=</span><span class="s1">&#39;,&#39;</span> --o
+</pre></div>
+</div>
+<p>Next, convert the flow direction raster into degrees. Flow direction is of
+D8 type with a range of 1 to 8. Multiplying values by 45 gives degrees counter
+clockwise from East.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>r.mapcalc <span class="s2">&quot;fdir_deg = if(fdir != 0, 45. * abs(fdir), null())&quot;</span>
+</pre></div>
+</div>
+<p>Once we have the coordinates for each of the channel heads in a file, we
+run <em>r.drain</em> in a loop to create a vector line layer for individual stream
+channels. For our purposes, we want to extract point information along the
+river profile. Using <em>v.to.point</em>, points are created along an individual stream
+at a maximum distance no greater than the resolution of the dem. The output
+vector map has 2 layers - layer 2 stores each point as a unique category
+together with the distance from the line’s start stored as <em>’along’</em>.
+Use <em>v.what.rast</em> to retrieve values for elevation from the dem and
+drainage area pixels from the flow accumulation raster and add those columns
+to the points file. Now the river data is ready for extraction as an ascii file
+for further analysis.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Setting parameters</span>
+
+<span class="c1">#Determining cell resolution to calculate drainage area</span>
+<span class="nb">eval</span> <span class="sb">`</span>g.region -g<span class="sb">`</span>
+<span class="nv">SQ_M</span><span class="o">=</span><span class="k">$(</span> <span class="nb">echo</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">ewres</span><span class="si">}</span><span class="s2">*</span><span class="si">${</span><span class="nv">nsres</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">|</span> bc -l <span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;Cell resolution: </span><span class="nv">$SQ_M</span><span class="s2"> m^2&quot;</span>
+
+<span class="c1">#DEM resolution</span>
+<span class="nv">res</span><span class="o">=</span><span class="m">30</span>
+
+<span class="c1">#Loop to extracting river channels</span>
+<span class="nv">i</span><span class="o">=</span><span class="m">0</span>
+<span class="k">while</span> <span class="nb">read</span> X Y<span class="p">;</span> <span class="k">do</span>
+    <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$X</span><span class="s2">, </span><span class="nv">$Y</span><span class="s2">&quot;</span>
+    <span class="nv">i</span><span class="o">=</span><span class="k">$((</span> <span class="si">${</span><span class="nv">i</span><span class="si">}</span> <span class="o">+</span> <span class="m">1</span><span class="k">))</span>
+    <span class="c1">#Determine individual stream path</span>
+    r.drain <span class="nv">input</span><span class="o">=</span>dem <span class="nv">direction</span><span class="o">=</span>fdir_deg <span class="nv">output</span><span class="o">=</span>cpath_<span class="nv">$i</span> <span class="se">\</span>
+        <span class="nv">drain</span><span class="o">=</span>cpath_<span class="nv">$i</span> <span class="nv">start_coordinates</span><span class="o">=</span><span class="nv">$X</span>,<span class="nv">$Y</span> --o
+    <span class="c1">#Extract X, Y coordinates and distance along channel</span>
+    v.to.points <span class="nv">input</span><span class="o">=</span>cpath_<span class="nv">$i</span> <span class="nv">output</span><span class="o">=</span>cpath_pnt<span class="nv">$i</span> <span class="se">\</span>
+        <span class="nv">use</span><span class="o">=</span>vertex <span class="nv">dmax</span><span class="o">=</span><span class="si">${</span><span class="nv">res</span><span class="si">}</span> <span class="nv">layer</span><span class="o">=</span>-1 --o
+    <span class="c1">#Extract elevation at each point</span>
+    v.what.rast cpath_pnt<span class="nv">$i</span> <span class="nv">raster</span><span class="o">=</span>dem <span class="nv">column</span><span class="o">=</span>elev <span class="nv">layer</span><span class="o">=</span><span class="m">2</span> --o
+    <span class="c1">#Extract flow accumulation at each point</span>
+    v.what.rast cpath_pnt<span class="nv">$i</span> <span class="nv">raster</span><span class="o">=</span>facc <span class="nv">column</span><span class="o">=</span>accum_pixels <span class="nv">layer</span><span class="o">=</span><span class="m">2</span> --o
+    v.db.addcolumn cpath_pnt<span class="nv">$i</span> <span class="nv">columns</span><span class="o">=</span><span class="s2">&quot;accum_area double&quot;</span> <span class="nv">layer</span><span class="o">=</span><span class="m">2</span> --o
+    <span class="c1">#Convert flow accumulation pixels to m^2</span>
+    v.db.update cpath_pnt<span class="nv">$i</span> <span class="nv">column</span><span class="o">=</span>accum_area <span class="se">\</span>
+        <span class="nv">query_col</span><span class="o">=</span><span class="s2">&quot;accum_pixels*</span><span class="si">${</span><span class="nv">SQ_M</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">layer</span><span class="o">=</span><span class="m">2</span> --o
+    <span class="c1">#Drop column with flow accumulation pixels</span>
+    v.db.dropcolumn cpath_pnt<span class="nv">$i</span> <span class="nv">columns</span><span class="o">=</span><span class="s2">&quot;accum_pixels&quot;</span> <span class="nv">layer</span><span class="o">=</span><span class="m">2</span> --o
+    v.out.ascii -c <span class="nv">input</span><span class="o">=</span>cpath_pnt<span class="nv">$i</span> <span class="nv">layer</span><span class="o">=</span><span class="m">2</span> <span class="nv">columns</span><span class="o">=</span>* <span class="se">\</span>
+        <span class="nv">separator</span><span class="o">=</span><span class="s1">&#39; &#39;</span> <span class="nv">output</span><span class="o">=</span>riv<span class="nv">$i</span>.dat --o
+    <span class="c1">#Output each stream channel in a seperate ascii file</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Created stream: </span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="k">done</span> &lt; channel_heads.dat
+</pre></div>
+</div>
+<p><strong>Example ASCII file output</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">east</span> <span class="n">north</span> <span class="n">cat</span> <span class="n">along</span> <span class="n">elev</span> <span class="n">accum_area</span>
+<span class="mf">230061.14327134</span> <span class="mf">3987135.22762934</span> <span class="mi">1</span> <span class="mf">0.00000000</span> <span class="mi">586</span> <span class="mf">5094.56388117</span>
+<span class="mf">230061.14327134</span> <span class="mf">3987164.36684656</span> <span class="mi">2</span> <span class="mf">29.13921722</span> <span class="mi">585</span> <span class="mf">221613.52883072</span>
+<span class="mf">230032.00405412</span> <span class="mf">3987193.50606378</span> <span class="mi">3</span> <span class="mf">70.34829341</span> <span class="mi">585</span> <span class="mf">236048.12649403</span>
+<span class="mf">230002.8648369</span> <span class="mf">3987193.50606378</span> <span class="mi">4</span> <span class="mf">99.48751063</span> <span class="mi">584</span> <span class="mf">252180.91211772</span>
+<span class="mf">229973.72561968</span> <span class="mf">3987193.50606378</span> <span class="mi">5</span> <span class="mf">128.62672785</span> <span class="mi">584</span> <span class="mf">253879.10007811</span>
+<span class="mf">229944.58640246</span> <span class="mf">3987193.50606378</span> <span class="mi">6</span> <span class="mf">157.76594507</span> <span class="mi">583</span> <span class="mf">257275.47599889</span>
+<span class="mf">229915.44718524</span> <span class="mf">3987193.50606378</span> <span class="mi">7</span> <span class="mf">186.90516229</span> <span class="mi">580</span> <span class="mf">258973.66395928</span>
+<span class="mf">229886.30796802</span> <span class="mf">3987193.50606378</span> <span class="mi">8</span> <span class="mf">216.04437950</span> <span class="mi">579</span> <span class="mf">393979.60681018</span>
+<span class="mf">229857.1687508</span> <span class="mf">3987222.645281</span> <span class="mi">9</span> <span class="mf">257.25345569</span> <span class="mi">579</span> <span class="mf">394828.70079037</span>
+<span class="mf">229828.02953358</span> <span class="mf">3987251.78449822</span> <span class="mi">10</span> <span class="mf">298.46253188</span> <span class="mi">577</span> <span class="mf">410961.48641406</span>
+<span class="mf">229798.89031636</span> <span class="mf">3987251.78449822</span> <span class="mi">11</span> <span class="mf">327.60174910</span> <span class="mi">573</span> <span class="mf">452567.09144359</span>
+<span class="mf">229769.75109914</span> <span class="mf">3987280.92371544</span> <span class="mi">12</span> <span class="mf">368.81082529</span> <span class="mi">570</span> <span class="mf">456812.56134456</span>
+<span class="mf">229740.61188192</span> <span class="mf">3987310.06293266</span> <span class="mi">13</span> <span class="mf">410.01990148</span> <span class="mi">557</span> <span class="mf">461907.12522572</span>
+<span class="mf">229711.4726647</span> <span class="mf">3987310.06293266</span> <span class="mi">14</span> <span class="mf">439.15911870</span> <span class="mi">553</span> <span class="mf">472945.34696825</span>
+<span class="mf">229682.33344748</span> <span class="mf">3987339.20214988</span> <span class="mi">15</span> <span class="mf">480.36819489</span> <span class="mi">545</span> <span class="mf">476341.72288903</span>
+<span class="mf">229653.19423027</span> <span class="mf">3987339.20214988</span> <span class="mi">16</span> <span class="mf">509.50741211</span> <span class="mi">537</span> <span class="mf">479738.09880980</span>
+<span class="mf">229624.05501305</span> <span class="mf">3987339.20214988</span> <span class="mi">17</span> <span class="mf">538.64662933</span> <span class="mi">529</span> <span class="mf">485681.75667117</span>
+</pre></div>
+</div>
+<p>The raw river ASCII file will need to be processed before it can be used
+together with the river inversion code.</p>
+</div>
+</div>
+<div class="section" id="exporting-vectors">
+<h2>Exporting Vectors<a class="headerlink" href="#exporting-vectors" title="Permalink to this headline">¶</a></h2>
+<p>Export vector layers using the <em>v.out.ogr</em> module. This tool allows you to specify any number of different output formats. This code example uses <em>GMT</em>. Remember for stream networks, make sure to specify that the type=line.
+Areas seem to be automatically picked up with no complaints by GMT when
+it comes to plotting.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>v.out.ogr <span class="nv">input</span><span class="o">=</span>vector_file <span class="nv">output</span><span class="o">=</span>vector_file.shp <span class="se">\</span>
+    <span class="nv">format</span><span class="o">=</span><span class="s2">&quot;OGR_GMT&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="useful-commands">
+<h2>Useful Commands<a class="headerlink" href="#useful-commands" title="Permalink to this headline">¶</a></h2>
+<p>To check the list of rasters or vector files generated during the
+hydrological analysis, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g.list raster
+g.list vector
+</pre></div>
+</div>
+<p>Another useful tool to check metadata of the raster or vector layer –
+which will also tell you what tool and criteria you used to generate the
+raster layer is ‘r.info raster’.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>r.info rasterfilename
+v.info vectorfilename
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Grass Methodology</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="grass_methodology.html">Preparing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grass_structure.html">Understanding GRASS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Stream Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pre-analysis-steps">Pre-analysis steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#importing-and-displaying-gdal-raster-data">Importing and displaying GDAL Raster Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#watershed-analysis">Watershed Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extracting-stream-network">Extracting Stream Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exporting-vectors">Exporting Vectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#useful-commands">Useful Commands</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="grass_structure.html" title="previous chapter">Understanding GRASS</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Carla Pont.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/hydrological_analysis.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
