@@ -2,86 +2,101 @@
 
 \section{Choosing your dataset}
 
-Free geospatial data is widely available, today's challenges is not finding it but deciding which dataset is best for the project at hand. For high resolution datasets with global resolution, try ASTER or SRTM datsests
+Free geospatial data is widely available, so today's challenges is not finding it but deciding which dataset is best for the project at hand. There are a number of different topographic datasets freely available online, you will need to decide which is most appropriate for your project. LIDAR is preferable for detailed sudies with resolutions of approx 10m. Digital elevation models of 30 m (1 arc second) to 90 m (3 arc second) resolution are often used for regional to continental-scale drainage inversions. Computational power will be one consideration when deciding on the areal extent of your project. The following are high resolution datasets with global resolution:
 
-There is a number of different topographic datasets and you will need to decide which is most appropriate for your project. LIDAR is preferable for detailed sudies with resolution of approx 10m. However to run the inversion, you will be looking to include large river drainage networks to stabalise the inversion. In this case 30 m (1 arc second) or 90 m (3 arc second) elevation datasets will be computationally less intensive. 
+\vspace{3mm}
 
-Computational power is one of the key considerations when considering the areal extent of your project. [Include section on why this needs to be considered carefully]
+\noindent	\textbf{Space Shuttle Radar Topography Mission (SRTM):} SRTM has global 30m and 90m datasets available on NASA's Earthdata portal:
+\url{https://search.earthdata.nasa.gov/search}. 
+NASA gathered the data using interferometric synthetic arpeture radar (inSAR) on an 11 day mission back in 2000 aboard its Space Shuttle Endeavour. Keep a look out for NASADEM which will be a fully reprocessed SRTM data using state-of-the-art interferometric processing techniques. The final version has not yet been released. 
 
-The following website has a nice compilation of some of the global LIDAR data available to use: \url{https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw}. For the area of interest in this particular project – the northern Arabian Platform – no LIDAR data was available. 
+\vspace{3mm}
 
-\subsection{SRTM data}
+\noindent \textbf{ASTER Global Digital Elevation Model:} ASTER GDEM-2 is also available for download at NASA Earthdata. ASTER GDEM is a collaboration between NASA and Japan's Advanced Spaceborne Thermal Emission and Reflection Radiometer (ASTER). The digital elevation model was created using stereoscopic pairs, using stereopairs and photogrammetry to measure elevation from two images at different angles. Cloud cover is the main problem with accuracy of the ASTER GDEM products but is considered to be a more accurate representation of rugged mountainous terrain than SRTM. 
 
-NASA Shuttle Radar Topography Mission (SRTM) Global 1 arc second V003 granules were downloaded from \url{https://search.earthdata.nasa.gov} [on 26.01.19] (174 granules in total). The main objective was to ensure that the full length of the Euphrates and Tigris river originating in northeastern Turkey, draining via Syria and Iraq into the Persian Gulf. The aim is to test the hypothesis whether it is necessary for these large drainage networks to stabalise the inversion. 
+\vspace{3mm}
 
-However first to test the fidelity of drainage networks extracted using the suite of GRASS hydrological tools, this was first trialled on a small area of the Hatay Graben using the following 6 granules downloaded from the Earthdata NASA website:
+\noindent \textbf{JAXA's Global ALOS 3D World:} Tiles can be downloaded from JAXA's portal on registration: \url{https://www.eorc.jaxa.jp/ALOS/en/aw3d30/}. This 30m digital surface model was collected aboard the Advanced Land Observing Satellite "ALOS" by the Panachromatic Remote-sensing Instrument for Stereo Mapping (PRISM), with the latest version released in 2019. 
 
-\textit{N35E035.hgt
-N35E036.hgt
-N36E035.hgt
-N36E036.hgt
-N37E035.hgt
-N37E036.hgt}
+\vspace{3mm}
+
+\noindent \textbf{LIDAR:} The following website has a nice compilation of some of the global LIDAR data available to use: \url{https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw}. 
 
 
-\subsection{Downloading grids from Nasa Earthdata using Linux}
+\section{Downloading STRM Granules}
 
-The Earthdata website provides a ready-made script to download your chosen granules directly onto your computer. When working with large datasets, I would highly recommend option for this option as it will be hugely time efficient. Opt for direct download and click on ``Download Access Script``. This will take you to a page containing instructions on how to use the download script. Click the ``Download Script File`` button to download the script. From your download folder, open the script using your preferred text editor (e.g. Visual Studio Code, VIM, gedit):
+Earthdata website provides a ready-made script to download your chosen granules directly onto your computer. Opt for direct download and click on ``Download Access Script``. This will take you to a page containing instructions on how to use the download script. Click the ``Download Script File`` button to download the script. 
+
+\noindent If you are using Ubuntu, you will need to make the following change $\#$!/bin/sh $\rightarrow$ $\#$!/bin/bash as \textit{bin/sh} no longer links to bash and instead points to another shell called dash. Now execute and run the script from the command line in your Download folder. You will be prompted for your Earthdata username and password, be aware that nothing will show up when you type your password. The grids will now be automatically downloaded to the Downloads folder. Unzip files to you chosen destination folder.
 
 \begin{lstlisting}[language=bash]
 cd Downloads
-code download.sh
-\end{lstlisting}
-
-To run the code, I need to make a small change ${\#}$!/bin/sh to ${\#}$!/bin/bash at the top of the script. Whether you need to do this or not will depend on your shell. In Ubuntu, \textit{bin/sh} no longer links to bash and instead points to another shell called dash. Save file and then execute and run the script from the command line in your Download folder by:
-
-\begin{lstlisting}[language=bash]
 chmod 777 download.sh 
 ./download.sh 
-\end{lstlisting}
-
-Type in your earthdata username and password when prompted. Be aware that nothing will show up when you type your password. The grids will now be automatically downloaded to our Downloads folder. Unzip files to chosen destination folder. If using a wild card to pattern match, make sure it is all within quote marks.
-
-\begin{lstlisting}[language=bash]
 unzip "*.hgt" destination-folder
 \end{lstlisting}
 
 
 \section{Merging rasters}
 
-By far, the simplest and most time efficient way is to use gdal${\_}$merge.py instead of ArcGIS's \textit{``Mosaic to New Raster"} tool to mosaic each of the SRTM granules into one grid. For example, 176 1 arc second resolution SRTM grids covering the northern Arabian Peninsula was stiched together in less than a minute using:
+By far, the simplest and most time efficient way is to use gdal${\_}$merge.py instead of ArcGIS's \textit{``Mosaic to New Raster"} tool to mosaic each of the SRTM granules into one grid. To give an example, 176 SRTM grids at 30m resolution covering the northern Arabian Peninsula was stitched together in less than a minute.
 
 \begin{lstlisting}[language=bash]
 ls *.hgt > DEMs.txt
-gdal_merge.py -n -32768 -a_nodata -32768 -o merged_dem.tif --optfile DEMs.txt
+gdal_merge.py -of Gtiff -n -32768 -a_nodata -32768 \
+	-o merged_dem.tif --optfile DEMs.txt
 \end{lstlisting}
 
-To find out information about your raster set, \textit{gdalinfo} is a very useful tool. This tool is used primarily to find out information on the raster’s coordinate system, resolution (i.e. pixel size) and extent of the raster through corner coordinates. No data needs to be specified if using RichDem to process the data. In order to mantain the NoData cells on the merged dem, it is necessary to specify a no data value. The -n flag ignores any pixels in the files being merged with this pixel value while -a_nodata assigns a specified nodata value to the output. You can check no data values in the original SRTM grids. 
+\noindent This example uses an output format of Gtiff but can any format ca be specified using the \textit{-of} flag. No data values can be lost in translation so specify a no data value to mantain NoData cells in the merged dem. If you are using programs like RichDem to hydrologically process the DEM, this will be a pre-requisite. The \textit{-n} flag ignores any pixels in the files being merged with this pixel value while \textit{-a${\_}$nodata} assigns a specified nodata value to the output. You can check no data values in the original SRTM grids using \textit{gdalinfo}. This tool will list information about your raster dataset, including the raster’s coordinate system, resolution (i.e. pixel size) and regional extent. 
+
+\vspace{3mm}
+
+\noindent \textbf{Example}
+\begin{lstlisting}
+gdalinfo ~/openev/utm.tif
+Driver: GTiff/GeoTIFF
+Size is 512, 512
+Coordinate System is:
+PROJCS["NAD27 / UTM zone 11N",
+    GEOGCS["NAD27",
+        DATUM["North_American_Datum_1927",
+            SPHEROID["Clarke 1866",6378206.4,294.978698213901]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",-117],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1]]
+Origin = (440720.000000,3751320.000000)
+Pixel Size = (60.000000,-60.000000)
+Corner Coordinates:
+Upper Left  (  440720.000, 3751320.000) (117d38'28.21"W, 33d54'8.47"N)
+Lower Left  (  440720.000, 3720600.000) (117d38'20.79"W, 33d37'31.04"N)
+Upper Right (  471440.000, 3751320.000) (117d18'32.07"W, 33d54'13.08"N)
+Lower Right (  471440.000, 3720600.000) (117d18'28.50"W, 33d37'35.61"N)
+Center      (  456080.000, 3735960.000) (117d28'27.39"W, 33d45'52.46"N)
+Band 1 Block=512x16 Type=Byte, ColorInterp=Gray
+\end{lstlisting}
+
 
 \section{Projecting data}
 
-Before importing your raster layer into GRASS, use gdalwarp to project the raster data into your preferred coordinate system. SRTM raster datasets use a geographic coordinate system based on a spherical surface. This can be problematic when measuring distances which uses angular units which depends on where you are on the earth’s surface. Extracting rivers relies on accurately knowing river distances measured in length, so use an equal areas projected coordinate. For small study areas, Universal Transvere Mercator (UTM) system is widely used as a projection system in metres. For continent-wide analyses, Albers Equal Areas or equivalent would be a good choice. Note that you will also need to consider the approproate ellipsoid. 
-
-Projecting dem into UTM 37N (ESPG:32637) which is suitable for use with small narrow regions. The western end of Hatay Graben falls under UTM 36N, however given that boundaries of UTM Zone can extend ${\pm}$5 km, distortion will be small along the coastal region of Hatay. A simple way to understand the areal distortion as you move away from the UTM zone boundary is to use GeoConvert tool to determine the meridian convergence and scale in the correct UTM zone 36:
+Before importing your raster layer into GRASS, use \textit{gdalwarp} to project the raster data into your preferred coordinate system. SRTM raster datasets uses a geographic coordinate system based on a spherical surface. This can be problematic when measuring distances in angular units as it is highly dependant on where you are on the Earth’s surface. Extracting rivers relies on accurately knowing river distances measured in length, so use an equal areas projected coordinate system. For small study areas, Universal Transvere Mercator (UTM) system is widely used while Albers Equal Areas or equivalent projections may be used for continent-wide analyses,. Note that you will also need to consider the appropriate ellipsoid. 
 
 \begin{lstlisting}[language=bash]
-echo "37N 229470.56706717 3983261.83838957" | GeoConvert -u -z 36 -c >> 1.76284 1.0005024
-echo "37N 213040.77439037 3934458.42582466" | GeoConvert -u -z 36 -c >> 1.64826 1.0004153
+proj='+proj=lcc +lat_1=17.0 +lat_2=33.0 +lat_0=25.08951 \
+	+lon_0=48.0 +ellps=intl +units=m +no_defs'
+
+gdalwarp -t_srs $proj merged_dem.tif projected_dem.tif
 \end{lstlisting}
 
-For example at the mouth of riv 2, the area distortion 1.00100505240576 (1.0005024**2), while distortion at the mouth of riv 614 which represents the furthest coastal point from UTM Zone37 increases to 1.00083077247409. Distortion is relatively small so within acceptable bounds for this initial analysis. 
-
-For the Hatay project, the merged dem was projected into Lambert Conformal Conic projection (similar to Albers Conic Equal Areas projection) but portrays shape more accurately than areas. Often used in the mid-latitudes. Reference latitudes were calculate for 1/6 and 5/6 respectively of the region of interest: S:29 and N:38 while the Deir ez Zor datum and Ellipsoid Clarke 1880 locally used in the Sryian which best represents the area of interest.
-
-\begin{lstlisting}[language=bash]
-gdalwarp -t_srs '+proj=lcc +lat_1=17.0 +lat_2=33.0 \
-	+lat_0=25.08951 +lon_0=48.0 +ellps=intl +units=m \
-	+no_defs' merged_dem.tif dem.tif
-\end{lstlisting}
-
-
-
+\noindent You can use -te \textless xmin ymin xmax ymax\textgreater  to clip the dem to a specific extent if you want. 
 
 \section{Filling Voids}
 
-The primary objective of the NASA MeaSUREs project (Making Earth System Data Records for Use in Research Environments) Program was to remove voids (no data holes) in the NASA SRTM DEM. In theory data should be seamless but there is a tool in GRASS to check and fill no data voids in the dem. In the meantime, you can use the flag in gdal \textit{dstnodata -9999} to fix any issues although this isn’t always guaranteed to work. 
+The primary objective of the NASA MeaSUREs project (Making Earth System Data Records for Use in Research Environments) Program was to remove voids (no data holes) in the NASA SRTM DEM. In theory data should be seamless an no processing is required to fill voids. 
+
+\noindent There is a tool in GRASS to check and fill no data voids in the dem. It is also possible to use the flag in gdal \textit{dstnodata -9999} to fix any issues although this isn’t always guaranteed to work. 

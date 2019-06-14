@@ -10,8 +10,9 @@ The following steps should have been completed before the DEM is ready for river
 \item The DEM has been checked for any holes/spikes/or errors. 
 \end{enumerate}
 
+\vspace{3mm}
 
-\section{Starting a new project in GRASS}
+\section{Installing and using GRASS}
 
 If you are unfamiliar with using GRASS, I suggest you look at the following tutorial to make sure you have installed and set up a project on Grass:
 
@@ -23,11 +24,21 @@ An excellent introductory guide on using GRASS GIS for Geomorphologists by Andre
 \url{https://ma.ellak.gr/documents/2015/07/grass-gis-for-geomorphologists-an-introductory-guide-2.pdf}
 \end{itemize}
 
+\vspace{6mm}
 
-Create a new project location, convention is to use the projected zone e.g. \textit{utm37n} and a location title to describe the project e.g. \textit{hatay}. Click \textit{`next'} and tick the box for\textit{`Read projection and datum terms from a georeferenced data file option’} which will pull the projection information from the metadata. There are lots of other options for projection of raster data which you can explore. Click \textit{`next'} and upload your projected dem. Once you’ve done this and click \textit{`next'} you will see a summary of your selection and corresponding projections. Click \textit{`Finish`} to finalise your selection. A pop up window may appear asking if you want to set the default region. Click \textit{`no'} as the bounding box and resolution will be imported from the raster dem. 
+\section{Starting a new project in GRASS}
 
-Note that GRASS has a strict set-up to internally manage its file structure system so make sure that any files are added or deleted from within the GRASS directory. Time to start your GRASS session – with your GRASS Location and Mapset `PERMANENT’ highlighted click on \textit{‘
-`Start your GRASS session'}. GRASS will load up a graphical user interface (GUI) using two windows - a layer manager and the map display. Now you are ready to use GRASS. The following instructions will use the command line interface but this can all be done through the GUI if you prefer this method. 
+Create a new project location, convention is to use the projected zone \emph{e.g. 37n} and a location title to describe the project \emph{e.g. italy}. Click \emph{`next'} and tick the box for \emph{`Read projection and datum terms from a georeferenced data file option’} which will pull the projection information from metadata. There are lots of other options for projection of raster data which you can explore. Click \emph{`next'} and upload your projected dem. Once you’ve done this and click \textit{`next'} you will see a summary of your selection and corresponding projections. Click \textit{`Finish`} to finalise your selection. A pop up window may appear asking if you want to set the default region. Click \textit{`no'} as the bounding box and resolution will be imported from the raster dem. 
+
+\noindent Note that GRASS has a strict set-up to internally manage its file structure system so make sure that any files are added or deleted from within the GRASS directory. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.5]{grass_structure}
+\caption{Grass internal file structure}
+\end{figure}
+
+Time to start your GRASS session – with your GRASS Location and Mapset `PERMANENT’ highlighted click on \emph{`Start your GRASS session'}. GRASS will load up a graphical user interface (GUI) using two windows - a layer manager and the map display. Now you are ready to use GRASS. The following instructions will use the command line interface but this can all be done through the GUI if you prefer this method. 
 
 \section{Importing and displaying GDAL Raster Data}
 
@@ -40,13 +51,28 @@ cd destination_folder/dem_grids
 r.in.gdal input=dem.tif output=dem
 \end{lstlisting}
 
-To loo at the regional extent of the datset, use:
+\noindent To check the regional extent of your raster datset, use:
 
 \begin{lstlisting}[language=bash]
 g.region -p
+
+projection: 1 (UTM)
+zone:       37
+datum:      wgs84
+ellipsoid:  wgs84
+north:      4213386.67972946
+south:      3874847.25407434
+west:       134877.89022413
+east:       324399.35901918
+nsres:      29.13921722
+ewres:      29.13921722
+rows:       11618
+cols:       6504
+cells:      75563472
+
 \end{lstlisting}
 
-You change the region and bring it back to its full extent and original resolution by typing:
+\noindent You change the region and bring it back to its full extent and original resolution by typing:
 
 \begin{lstlisting}[language=bash]
 g.region rast=dem
@@ -54,9 +80,7 @@ g.region rast=dem
 
 \subsection*{Displaying Raster Data}
 
-The GUI interface can be used in the same way as ArcGIS to add and manipulate raster datasets. The following instruction will use the command line, with the advantage of allowing short scripts to create and save map images.
-
-To displayed the raster DEM in a graphical interface, type in the command line:
+The GUI interface can be used in the same way as ArcGIS to add and manipulate raster datasets. The following instruction will use the command line, with the advantage of allowing short scripts to create and save map images. It is good practice to check processing steps as you go along, particularly if you are changing the computational region. You can display the raster DEM in a graphical interface from the command line.
 
 \begin{lstlisting}[language=bash]
 # Starts display window using monitor wx0
@@ -69,20 +93,20 @@ d.rast map=dem
 
 \subsection*{Creating a hillshaded relief map}
 
-To create a shaded relief map from a DEM, use r.relief. Default settings for altitude is 30 degrees above the horizon, azimuth is 270 degrees to the east from north and exaggeration z-scaling factor is set to 1. The map is assigned a grey-scale color table. It is possible to add color to shaded relief maps using r.shade
+To create a shaded relief map from a DEM, use \emph{r.relief}. Default settings for altitude is 30 degrees above the horizon, azimuth is 270 degrees to the east from north and exaggeration z-scaling factor is set to 1. The map is assigned a grey-scale color table. It is possible to add color to shaded relief maps using r.shade.
 
 \begin{lstlisting}[language=bash]
 r.relief input=dem output=dem_shade
 \end{lstlisting}
 
-To then drape  and display the elevation dem onto the shaded relief raster map:
+\noindent The elevation dem can be draped and displayed over the shaded relief raster map:
 
 \begin{lstlisting}[language=bash]
 d.mon wx0
 d.shade shade=dem_shade color=dem
 \end{lstlisting}
 
-It is also possible to combine the shaded relief and dem rasters for output as part of a script (alternatively GMT can be used to display the resulting output). 
+\noindent It is also possible to combine the shaded relief and dem rasters for output as part of a script (alternatively GMT can be used to display the resulting output). 
 
 \begin{lstlisting}[language=bash]
 r.blend first=dem second=dem_shade \ 
@@ -97,21 +121,17 @@ d.rgb r=colored_shaded_relief.r g=colored_shaded_relief.g \
 
 Before proceeding with hydrological processing of the dem, make sure that you have delineated your region to the desired extent. First clip the dem to coastlines or any other desired shape polygon i.e. country or regional interest. 
 
-High resolution shoreline data can be downloaded from the National Oceanic and Atmospheric Adminstration (\url{www.noaa.gov}) a \textit{.shp} file which will ensure you are using a hierachically arranged closed polygons. Make sure you download Level 1 data which contains continental land masses to ensure you have a complete polygon for masking.
+\noindent \textbf{GSHSS Coastlines.} High resolution shoreline data can be downloaded from the National Oceanic and Atmospheric Adminstration (\url{www.noaa.gov}). A \textit{.shp} file which will ensure you are using a hierachically arranged closed polygons. Make sure you download Level 1 data which contains continental land masses to ensure you have a complete polygon for masking.
 
-\textit{Import shapefile} \newline
-Import coastline data to the regional extent of the dem which will be reprojected from lat long to UTM coordinates on the fly.
+\noindent \textit{Import shapefile}
+
+\noindent Import coastline data to the regional extent of the dem which will be reprojected from lat long to UTM coordinates on the fly.
 
 \begin{lstlisting}[language=bash]
 #Import shapefile
 v.import input=GSHSS_h_L1.shp output=coast extent=region
 #View shapefile 
 d.vect map=coast width=2 type=boundary
-\end{lstlisting}
-
-\textit{Masking dem using shapefile}
-
-\begin{lstlisting}[language=bash]
 # Mask dem using shapefile
 r.mask vector=coastline
 # Display masked dem to check your results 
@@ -120,11 +140,12 @@ d.rast dem
 r.mask -r
 \end{lstlisting}
 
+
 \subsection{Filling DEM}
 
-DEM's will have numerous sinks, so before rivers can be extracted, a hydrologically consistent surface needs to be produced. Local depressions will interrupt flow-routing alogorithms and produce incorrect stream networks if incorrect patterns of flow accumulation have been created. However, it is worth noting that not all sinks are errors due to resolution of the data or rounding of elevations to the nearest integer, these sinks can be real-life features. GRASS \textit{r.fill.dir} module fills DEM's in the same way as ArcGIS's Fill tool available as part of the spatial analyst licence. However, these depression-filling algorithms also create artifical features (e.g. flats leading to parallel streams). GRASS \textit{r.watershed} module does not require DEM's to be filled. Instead it uses a least-cost search algorithm to traverse the elevation surface to the outlet.
+DEM's will have numerous sinks, so before rivers can be extracted, a hydrologically consistent surface needs to be produced. Local depressions will interrupt flow-routing alogorithms and produce incorrect stream networks if incorrect patterns of flow accumulation have been created. However, it is worth noting that not all sinks are errors due to resolution of the data or rounding of elevations to the nearest integer, these sinks can be real-life features. GRASS \emph{r.watershed} module does not require DEM's to be filled. Instead it uses a least-cost search algorithm to traverse the elevation surface to the outlet.
 
-GRASS follows Henson and Domingue (1998) to filter and fill the elevation map. Using the neighborhood technique, \textit{r.fill.dir} will fill all depressions with one pass across the elevation model and produces a flow direction map by determining slope to each of the 8 surrounding cells (D8 algorithm) and assign a direction. However, in flat areas where cells in a number of different directions have the highest slope, the algorithm will try to find a different route, iterating though this process so it will propogate flow directions from areas where directions are know into areas that can't be resolved. 
+\noindent GRASS \emph{r.fill.dir} module fills DEM's in the same way as ArcGIS's Fill tool available as part of the spatial analyst licence. GRASS follows Henson and Domingue (1998) to filter and fill the elevation map. Using the neighborhood technique, \emph{r.fill.dir} will fill all depressions with one pass across the elevation model and produces a flow direction map by determining slope to each of the 8 surrounding cells (D8 algorithm) and assign a direction. However, in flat areas where cells in a number of different directions have the highest slope, the algorithm will try to find a different route, iterating though this process so it will propogate flow directions from areas where directions are know into areas that can't be resolved. However, be aware that these depression-filling algorithms also create artifical features (e.g. flats leading to parallel streams). 
 
 \begin{lstlisting}[language=bash]
 #Sets computational region
@@ -133,28 +154,7 @@ r.fill.dir input=dem output=dem_fill direction=fdir \
 	areas=dem_sinks
 \end{lstlisting}
 
-Note that the computational region can be changed to cover the area of interest. To test whether the hydrological tools in GRASS produce similar results to ArcGIS, I set the computational region to match the one used in ArcGIS. Unless you want the dem resampled to fit the boundary, the region should be adjusted to clearly align with the raster map. 
-
-\begin{lstlisting}[language=bash]
-g.region n=047400.6226 s=3931012.43965 e=315013.248521 \
-	w=197275.387655 align=dem save=hatay_region
-\end{lstlisting}
-
-It may be necessary to run r.fill.dir repeatedly (using the output from each run as the input for the next) before all problem areas have been filled. 
-
-The dem used for Hatay has a resolution of 29.13921722 x 29.13921722 and cell size 3995 x 4041 with a total non-null cell size of 13435256. Cells were filled up to a max of 94 m, with the mean adjustment of 0.8 m (0--4.9 m to 1 standard deviation).  Using \textit{r.fill.dir} module, 94840 unresolved areas were reported in its first pass which suggests that 0.7${\%}$ of cells in the SRTM DEM were sinks. This is just below the range found by Tarboton et. al (1991) of 0.9--4.7${\%}$ of total cells in DEM representing sinks. 
-
-In total, \textit{r.fill.dir} took 5 passes to completely fill the DEM. 
-
-\begin{tabular}{ c c c }
-1 & 94,840 & dem${\_}$fill1\\
-2 & 6,194 & dem${\_}$fill2\\
-3 & 385 & dem${\_}$fill3\\
-4 & 21 & dem${\_}$fill4 \\
-5 & 1 & dem${\_}$fill5
-\end{tabular}
-
-Use raster calculator to generate a map showing the pixelwise differences between the raw and fill dem:
+\noindent Use raster calculator to generate a map showing the pixelwise differences between the raw and fill dem:
 
 \begin{lstlisting}[language=bash]
 r.mapcalc "dem_diff = dem_fill - dem"
@@ -174,23 +174,25 @@ d.shade shade=dem_fill_shade color=dem_fill
 d.vect dem_fill_area type=boundary color=red
 \end{lstlisting}
 
+\noindent Grass's \emph{r.fill.dir} module does not deal well with large raster datasets. It is worth exploring python modules \emph{e.g. Richdem} to fill DEMs.
+
 \section{Extracting Stream Network}
 
 \subsection{Enabling Extensions}
 
-Note to use various of the r.stream.* tools it is necessary to use \textit{g.extension} to install the tools as add-ons. This is as simple as \textit{g.extension r.stream.basins}. If you get an error``Please install GRASS development package”, you can install it from the Linux command line using \textit{sudo apt install grass-dev}.
+Note to use various of the \emph{r.stream.*} tools, it is necessary to use \emph{g.extension} to install the tools as add-ons. This is as simple as \emph{g.extension r.stream.basins}. If you get an error``Please install GRASS development package”, you can install it from the Linux command line using \emph{sudo apt install grass-dev}.
 
 Add-ons installed for this analysis:
 
-\begin{verbatim}
-r.stream.order
-r.stream.extract
-r.threshold
-r.stream.watersheds
-r.stream.distance
-r.stream.channel
+\begin{lstlisting}[language=bash]
+g.extension r.stream.order \
+r.stream.extract \
+r.threshold \
+r.stream.watersheds \
+r.stream.distance \
+r.stream.channel \
 r.stream.basins
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Flow Accumulation}
 
