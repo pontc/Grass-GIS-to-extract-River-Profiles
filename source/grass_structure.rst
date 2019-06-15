@@ -1,10 +1,11 @@
 .. _stream:
 
-Understanding GRASS
-===================
+Using GRASS GIS
+================
 
-Installing and using GRASS
---------------------------
+---------------------
+Setting up GRASS GIS
+---------------------
 
 If you are unfamiliar with using GRASS, I suggest you look at the
 following tutorials to make sure you have installed and set up a project
@@ -20,8 +21,11 @@ on Grass:
    https://ma.ellak.gr/documents/2015/07/grass-gis-for-geomorphologists-an-introductory-guide-2.pdf
 
 
-Starting a new project in GRASS
--------------------------------
+.. _starting-grass:
+
+-----------------------------------
+Starting a new Project in GRASS GIS
+-----------------------------------
 
 Create a new project location, convention is to use the projected zone
 *e.g. 37n* and a location title to describe the project *e.g. italy*.
@@ -43,6 +47,7 @@ layer manager and map display. You are now ready to use GRASS.
 The following instructions will use the command line interface but this can
 all be done through the GUI if you prefer this method.
 
+-------------------
 Enabling Extensions
 -------------------
 
@@ -52,19 +57,41 @@ are needed for stream network analysis:
 
 .. code:: bash
 
-   g.extension r.stream.extract r.stream.basins
+   GRASS :~ > g.extension r.stream.extract r.stream.basins
 
 **Troubleshooting.** If you get an error *‘Please install GRASS
 development package‘*, you can install the package from the Linux command line
 using *sudo apt install grass-dev*. Then try re-installing the add-ons.
 
+---------------
+Useful Commands
+---------------
+
+To check the list of rasters or vector files generated during the
+hydrological analysis, use:
+
+.. code:: bash
+
+   GRASS :~ > g.list raster
+   GRASS :~ > g.list vector
+
+Another useful tool to check metadata of the raster or vector layer –
+which will also tell you what tool and criteria you used to generate the
+raster layer is ‘r.info raster’.
+
+.. code:: bash
+
+   GRASS :~ > r.info rasterfilename
+   GRASS :~ > v.info vectorfilename
+
+---------------
 Grass structure
 ---------------
 
 .. figure:: images/grass_structure.png
    :alt: Grass internal file structure
 
-   Grass internal file structure
+   GRASS :~ > Grass internal file structure
 
 GRASS has a strict hierarchy for storing data. The "GISBASE" is the 
 master folder where all grass related projects is stored. A "LOCATION" is usually 
@@ -76,7 +103,7 @@ The 'PERMANENT' mapset can only be modified or removed by the owner. Since GRASS
 has a strict set-up to internally manage its file structure system, make sure that any files are added or deleted from within the GRASS directory.
 
 GIS Data types
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 *Raster.* Raster data is a regulary spaced grid (i.e. digital elevation model) and region settings are used to  determine the spatial extent and resolution of the grid. 
 
@@ -103,14 +130,14 @@ GIS Data types
 
     
 Sqlite database
-~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 GRASS will automatically create an SQLite database. To browse a table stored in a database within a current mapset, you can use *sqlitebrowser* as a convenient SQLite front-end browser. 
 
 .. code:: bash
 
     # fetch GRASS variables as shell environment variables:
-    eval `g.gisenv`
+    GRASS :~ > eval `g.gisenv`
     # use double quotes:
-    sqlitebrowser "$GISDBASE/$LOCATION_NAME/$MAPSET"/sqlite/sqlite.db   
+    GRASS :~ > sqlitebrowser "$GISDBASE/$LOCATION_NAME/$MAPSET"/sqlite/sqlite.db   
 

@@ -3,12 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Grass GIS to extract River Profiles: Methodology
-================================================
+Extracting River Profiles using Grass GIS: Documentation
+========================================================
 
-.. raw:: html
+*Using open source tools to extract river profiles*
 
-    <iframe src="https://giphy.com/embed/bsJHse5hPPMHu" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/loop-rock-mossy-bsJHse5hPPMHu"></a></p>
+A method for using GDAL library and GRASS GIS to extract river profiles
+from digital elevation models. 
 
 .. toctree::
    :maxdepth: 2
@@ -17,11 +18,7 @@ Grass GIS to extract River Profiles: Methodology
    grass_methodology
    grass_structure
    hydrological_analysis
+   watershed_analysis
+   stream_extraction
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

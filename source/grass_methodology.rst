@@ -1,7 +1,11 @@
 
+.. _prep:
+
+==============
 Preparing data
 ==============
 
+---------------------
 Choosing your dataset
 ---------------------
 
@@ -18,8 +22,7 @@ deciding on the areal extent of your project.
 The following are high resolution datasets with global resolution:
 
 **Space Shuttle Radar Topography Mission (SRTM):** SRTM has global 30m
-and 90m datasets available on NASA’s Earthdata portal:
-https://search.earthdata.nasa.gov/search. NASA gathered the data using
+and 90m datasets available on `NASA’s Earthdata portal <https://search.earthdata.nasa.gov/search>`_. NASA gathered the data using
 interferometric synthetic arpeture radar (inSAR) on an 11 day mission
 back in 2000 aboard its Space Shuttle Endeavour. Keep a look out for
 NASADEM which will be a fully reprocessed SRTM data using
@@ -35,18 +38,20 @@ elevation from two images at different angles. Cloud cover is the main
 problem with accuracy of the ASTER GDEM products but on the other hand it
 is considered to be a more accurate representation of rugged mountainous terrain than SRTM.
 
-**JAXA’s Global ALOS 3D World:** Tiles can be downloaded from JAXA’s
-portal on registration: https://www.eorc.jaxa.jp/ALOS/en/aw3d30/. This
+**JAXA’s Global ALOS 3D World:** Tiles can be downloaded from `JAXA’s
+portal <https://www.eorc.jaxa.jp/ALOS/en/aw3d30/>`_ on registration. This
 30m digital surface model was collected aboard the Advanced Land
 Observing Satellite "ALOS" by the Panachromatic Remote-sensing
 Instrument for Stereo Mapping (PRISM), with the latest version released
 in 2019.
 
-**LIDAR:** The following website has a nice compilation of some of the
-global LIDAR data available to use:
-https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw.
+**LIDAR:** The following `website <https://arheologijaslovenija.blogspot.com/p/blog-page_81.html?spref=tw>`_ has a nice compilation of some of the
+global LIDAR data available for use.
 
-Downloading STRM Granules
+.. _downloading:
+
+-------------------------
+Downloading SRTM Granules
 -------------------------
 
 Earthdata website provides a ready-made script to download your chosen
@@ -69,14 +74,17 @@ can unzip files to you chosen destination directory.
 .. code:: bash
 
    #Change to Downloads directory
-   cd Downloads
+   $ cd Downloads
    #Execute script
-   chmod 777 download.sh 
+   $ chmod 777 download.sh 
    #Run program to download STRM granules from Earthdata website
-   ./download.sh 
+   $ ./download.sh 
    #Unzip files to chosen directory
-   unzip "*.hgt" destination-directory
+   $ unzip "*.hgt" destination-directory
 
+.. _merging-raster:
+
+---------------
 Merging rasters
 ---------------
 
@@ -88,9 +96,9 @@ specified using the *-of* flag.
 
 .. code:: bash
 
-   ls *.hgt > DEMs.txt
-   gdal_merge.py -of Gtiff -n -32768 -a_nodata -32768 \
-   	-o merged_dem.tif --optfile DEMs.txt
+   $ ls *.hgt > DEMs.txt
+   $ gdal_merge.py -of Gtiff -n -32768 -a_nodata -32768 \
+   	    -o merged_dem.tif --optfile DEMs.txt
 
 **No data values.** No_data values can be lost in
 translation so specify a no_data value to maintain NoData cells in the
@@ -104,9 +112,12 @@ and regional extent.
 
 **Example**
 
+.. code:: bash
+   
+   $ gdalinfo ~/openev/utm.tif
+
 ::
 
-   gdalinfo ~/openev/utm.tif
    Driver: GTiff/GeoTIFF
    Size is 512, 512
    Coordinate System is:
@@ -133,6 +144,9 @@ and regional extent.
    Center      (  456080.000, 3735960.000) (117d28'27.39"W, 33d45'52.46"N)
    Band 1 Block=512x16 Type=Byte, ColorInterp=Gray
 
+.. _projecting:
+
+---------------
 Projecting data
 ---------------
 
@@ -145,26 +159,29 @@ Extracting rivers relies on accurately knowing river distances measured
 in length, so use an equal areas projected coordinate system. For small
 study areas, Universal Transvere Mercator (UTM) system is widely used
 while Albers Equal Areas or equivalent projections may be used for
-regional or continent-wide analyses. Note that you will also need to consider the
-appropriate ellipsoid to use for your projection.
+regional or continent-wide analyses. Note that you will also need to consider 
+the appropriate ellipsoid to use for your projection.
 
 .. code:: bash
 
-   proj='+proj=lcc +lat_1=17.0 +lat_2=33.0 +lat_0=25.08951 \
-   	+lon_0=48.0 +ellps=intl +units=m +no_defs'
+   $ proj='+proj=lcc +lat_1=17.0 +lat_2=33.0 +lat_0=25.08951 \
+   	    +lon_0=48.0 +ellps=intl +units=m +no_defs'
 
-   gdalwarp -t_srs $proj merged_dem.tif projected_dem.tif
+   $ gdalwarp -t_srs $proj merged_dem.tif projected_dem.tif
 
 You can use *-te <xmin ymin xmax ymax>* to clip the dem to a specific
 extent if you want.
 
+.. _holes:
+
+-------------
 Filling Voids
 -------------
 
 The primary objective of the NASA MeaSUREs project (Making Earth System
 Data Records for Use in Research Environments) Program was to remove
 voids (no data holes) in the NASA SRTM DEM. In theory data should be
-seamless an no processing is required to fill voids.
+seamless and no processing is required to fill voids.
 
 There is a tool in GRASS to check and fill no data voids in the dem. It
 is also possible to use the flag in gdal *dstnodata -9999* to fix any

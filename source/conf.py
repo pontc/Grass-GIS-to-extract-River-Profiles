@@ -17,10 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Grass-GIS-to-extract-River-Profiles'
+project = 'Extract River Profiles'
 copyright = '2019, Carla Pont'
 author = 'Carla Pont'
-
 
 # -- General configuration ---------------------------------------------------
 
