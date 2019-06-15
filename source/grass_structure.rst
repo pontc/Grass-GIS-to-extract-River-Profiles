@@ -20,6 +20,44 @@ on Grass:
    https://ma.ellak.gr/documents/2015/07/grass-gis-for-geomorphologists-an-introductory-guide-2.pdf
 
 
+Starting a new project in GRASS
+-------------------------------
+
+Create a new project location, convention is to use the projected zone
+*e.g. 37n* and a location title to describe the project *e.g. italy*.
+Click *‘next’* and tick the box for *‘Read projection and datum terms
+from a georeferenced data file option’* which will pull the projection
+information from metadata. There are lots of other options for
+projection of raster data which you can explore. Click *‘next’* and
+upload your projected dem. Once you’ve done this and click *‘next’* you
+will see a summary of your selection and corresponding projections.
+Click *‘Finish‘* to finalise your selection. A pop up window may appear
+asking if you want to set the default region. Click *‘no’* as the
+bounding box and resolution will be imported from the raster dem.
+
+Time to start your GRASS session – with your GRASS Location and Mapset
+*‘PERMANENT’* highlighted, click on *‘Start your GRASS session’*. GRASS
+will load up a graphical user interface (GUI) using two windows - a
+layer manager and map display. You are now ready to use GRASS. 
+
+The following instructions will use the command line interface but this can
+all be done through the GUI if you prefer this method.
+
+Enabling Extensions
+-------------------
+
+For various of the *r.stream.\** modules, it is necessary to use 
+*g.extension* to install these tools as add-ons. The following add-ons 
+are needed for stream network analysis:
+
+.. code:: bash
+
+   g.extension r.stream.extract r.stream.basins
+
+**Troubleshooting.** If you get an error *‘Please install GRASS
+development package‘*, you can install the package from the Linux command line
+using *sudo apt install grass-dev*. Then try re-installing the add-ons.
+
 Grass structure
 ---------------
 
@@ -64,7 +102,6 @@ GIS Data types
     +-------+-------------------------------------------------------+
 
     
-
 Sqlite database
 ~~~~~~~~~~~~~~~
 
@@ -77,40 +114,3 @@ GRASS will automatically create an SQLite database. To browse a table stored in 
     # use double quotes:
     sqlitebrowser "$GISDBASE/$LOCATION_NAME/$MAPSET"/sqlite/sqlite.db   
 
-Starting a new project in GRASS
--------------------------------
-
-Create a new project location, convention is to use the projected zone
-*e.g. 37n* and a location title to describe the project *e.g. italy*.
-Click *‘next’* and tick the box for *‘Read projection and datum terms
-from a georeferenced data file option’* which will pull the projection
-information from metadata. There are lots of other options for
-projection of raster data which you can explore. Click *‘next’* and
-upload your projected dem. Once you’ve done this and click *‘next’* you
-will see a summary of your selection and corresponding projections.
-Click *‘Finish‘* to finalise your selection. A pop up window may appear
-asking if you want to set the default region. Click *‘no’* as the
-bounding box and resolution will be imported from the raster dem.
-
-Time to start your GRASS session – with your GRASS Location and Mapset
-*‘PERMANENT’* highlighted, click on *‘Start your GRASS session’*. GRASS
-will load up a graphical user interface (GUI) using two windows - a
-layer manager and map display. You are now ready to use GRASS. 
-
-The following instructions will use the command line interface but this can
-all be done through the GUI if you prefer this method.
-
-Enabling Extensions
--------------------
-
-For various of the *r.stream.\** modules, it is necessary to use 
-*g.extension* to install these tools as add-ons. The following add-ons 
-are needed for stream network analysis:
-
-.. code:: bash
-
-   g.extension r.stream.extract r.stream.basins
-
-**Troubleshooting.** If you get an error *‘Please install GRASS
-development package‘*, you can install the package from the Linux command line
-using *sudo apt install grass-dev*. Then try re-installing the add-ons.
