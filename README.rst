@@ -52,7 +52,7 @@ Install the project locally and run:
 Contribute!
 -----------
 
-Please contribute! Use `Github Flow<https://guides.github.com/introduction/flow/index.html>`_ to suggest changes.
+Please contribute! Use `Github Flow <https://guides.github.com/introduction/flow/index.html>`_ to suggest changes.
 
 - Fork the repo and create your branch in master - send me pull requests.
-- Documentation uses `Python-Sphinx<http://www.sphinx-doc.org/en/master/>`_ and `reStructuredText<http://docutils.sourceforge.net/rst.html>`_ syntax
+- Documentation uses `Python-Sphinx <http://www.sphinx-doc.org/en/master/>`_ and `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ syntax
