@@ -15,7 +15,7 @@ Extracting Individual Streams for Plotting
 To extract individual stream channels we first need to connect the 
 stream network and find linking segments using their unique *cat* identifiers.
 In the example below, replace stream_300 with the name given for your vectorised
- stream network.
+stream network.
 
 .. code:: bash
 
