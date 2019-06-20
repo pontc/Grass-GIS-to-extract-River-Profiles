@@ -19,7 +19,9 @@ arc second) resolution are often used for regional to continental-scale
 drainage inversions. Computational power will be one consideration when
 deciding on the areal extent of your project. 
 
-The following are high resolution datasets with global resolution:
+Checkout `Terrain Data on Github <https://github.com/openterrain/openterrain/wiki/Terrain-Data>`_ for an extensive list of digital elevation
+models available. Here are the main high resolution datasets 
+with global coverage:
 
 **Space Shuttle Radar Topography Mission (SRTM):** SRTM has global 30m
 and 90m datasets available on `NASA’s Earthdata portal <https://search.earthdata.nasa.gov/search>`_. NASA gathered the data using
