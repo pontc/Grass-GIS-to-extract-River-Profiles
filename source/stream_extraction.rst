@@ -17,7 +17,7 @@ stream network and find linking segments using their unique *cat* identifiers.
 In the example below, replace stream_300 with the name given for your vectorised
  stream network.
 
-..code:: bash
+.. code:: bash
 
    v.db.addcolumn stream_300 columns="x1 double,x2 double,y1 double,y2 double,tostream int"
    v.to.db map=stream_300 option=start columns=x1,y1
